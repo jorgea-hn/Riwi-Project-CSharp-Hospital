@@ -13,10 +13,13 @@ namespace HospitalSanVicente
             services.AddSingleton<IPatientRepository, PatientRepository>();
             services.AddSingleton<IDoctorRepository, DoctorRepository>();
             services.AddSingleton<IAppointmentRepository, AppointmentRepository>();
+            services.AddSingleton<IEmailNotificationRepository, EmailNotificationRepository>();
 
             // Services
             services.AddSingleton<IPatientService, PatientService>();
             services.AddSingleton<IDoctorService, DoctorService>();
+            services.AddSingleton<IEmailService, EmailService>();
+            services.AddSingleton<IEmailNotificationService, EmailNotificationService>();
             services.AddSingleton<IAppointmentService, AppointmentService>();
         }
     }

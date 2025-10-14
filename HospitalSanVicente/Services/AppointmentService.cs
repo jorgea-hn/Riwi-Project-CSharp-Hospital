@@ -11,12 +11,21 @@ namespace HospitalSanVicente.Services
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IDoctorRepository _doctorRepository;
+        private readonly IEmailService _emailService;
+        private readonly IEmailNotificationService _emailNotificationService;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, IPatientRepository patientRepository, IDoctorRepository doctorRepository)
+        public AppointmentService(
+            IAppointmentRepository appointmentRepository, 
+            IPatientRepository patientRepository, 
+            IDoctorRepository doctorRepository,
+            IEmailService emailService,
+            IEmailNotificationService emailNotificationService)
         {
             _appointmentRepository = appointmentRepository;
             _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
+            _emailService = emailService;
+            _emailNotificationService = emailNotificationService;
         }
 
         public Appointment ScheduleAppointment(string patientDocument, string doctorDocument, DateTime date)
@@ -54,6 +63,18 @@ namespace HospitalSanVicente.Services
             };
 
             var createdAppointment = _appointmentRepository.Create(appointment);
+
+            // Load navigation properties for notification services
+            createdAppointment.Patient = patient;
+            createdAppointment.Doctor = doctor;
+
+            // Send confirmation email and record the notification
+            bool emailSent = _emailService.SendEmail(
+                createdAppointment.Patient.Email, 
+                "Your appointment has been scheduled", 
+                $"Hello {createdAppointment.Patient.Name}, your appointment with Dr. {createdAppointment.Doctor.Name} on {created.AppointmentDate:yyyy-MM-dd HH:mm} has been successfully scheduled."
+            );
+            _emailNotificationService.CreateNotification(createdAppointment, emailSent);
 
             return createdAppointment;
         }

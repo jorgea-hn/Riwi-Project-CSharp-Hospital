@@ -16,8 +16,9 @@ namespace HospitalSanVicente
             var patientService = serviceProvider.GetService<IPatientService>();
             var doctorService = serviceProvider.GetService<IDoctorService>();
             var appointmentService = serviceProvider.GetService<IAppointmentService>();
+            var emailNotificationService = serviceProvider.GetService<IEmailNotificationService>();
 
-            MainMenu(patientService, doctorService, appointmentService);
+            MainMenu(patientService, doctorService, appointmentService, emailNotificationService);
         }
 
         // Dependency Injection and Seeding
@@ -38,11 +39,12 @@ namespace HospitalSanVicente
         }
         
         // --- Main Menu ---
-        private static void MainMenu(IPatientService patientService, IDoctorService doctorService, IAppointmentService appointmentService)
+        private static void MainMenu(IPatientService patientService, IDoctorService doctorService, IAppointmentService appointmentService, IEmailNotificationService emailNotificationService)
         {
             var patientUI = new PatientUI(patientService);
             var doctorUI = new DoctorUI(doctorService);
             var appointmentUI = new AppointmentUI(appointmentService, patientService, doctorService);
+            var emailNotificationUI = new EmailNotificationUI(emailNotificationService);
 
             while (true)
             {
@@ -50,9 +52,10 @@ namespace HospitalSanVicente
                 Console.WriteLine("1. Patient Management");
                 Console.WriteLine("2. Doctor Management");
                 Console.WriteLine("3. Appointment Management");
-                Console.WriteLine("4. Exit");
+                Console.WriteLine("4. View Notification History");
+                Console.WriteLine("5. Exit");
                 
-                var choice = ConsoleReader.ReadMenuOption("Select an option: ", 4);
+                var choice = ConsoleReader.ReadMenuOption("Select an option: ", 5);
 
                 try
                 {
@@ -61,7 +64,8 @@ namespace HospitalSanVicente
                         case 1: patientUI.ShowMenu(); break;
                         case 2: doctorUI.ShowMenu(); break;
                         case 3: appointmentUI.ShowMenu(); break;
-                        case 4: return;
+                        case 4: emailNotificationUI.ShowNotificationHistory(); break;
+                        case 5: return;
                     }
                 }
                 catch (Exception ex)
