@@ -36,6 +36,11 @@ namespace HospitalSanVicente.Repository
             return _doctors.FirstOrDefault(d => d.Document == document);
         }
 
+        public IEnumerable<Doctor> GetBySpecialty(string specialty)
+        {
+            return _doctors.Where(d => d.Specialty.Equals(specialty, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
         public Doctor GetById(Guid id)
         {
             return _doctors.FirstOrDefault(d => d.Id == id);
