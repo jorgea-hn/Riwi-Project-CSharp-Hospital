@@ -10,14 +10,14 @@ namespace HospitalSanVicente.Services
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IDoctorRepository _doctorRepository;
-        private readonly IEmailService _emailService;
+        // private readonly IEmailService _emailService;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, IPatientRepository patientRepository, IDoctorRepository doctorRepository, IEmailService emailService)
+        public AppointmentService(IAppointmentRepository appointmentRepository, IPatientRepository patientRepository, IDoctorRepository doctorRepository)
         {
             _appointmentRepository = appointmentRepository;
             _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
-            _emailService = emailService;
+            // _emailService = emailService;
         }
 
         public Appointment ScheduleAppointment(string patientDocument, string doctorDocument, DateTime date)
@@ -50,7 +50,7 @@ namespace HospitalSanVicente.Services
 
             var createdAppointment = _appointmentRepository.Create(appointment);
 
-            _emailService.SendEmail(patient.Email, "Cita Programada", $"Su cita ha sido programada para el {date} con el doctor {doctor.Name}.");
+            // _emailService.SendEmail(patient.Email, "Cita Programada", $"Su cita ha sido programada para el {date} con el doctor {doctor.Name}.");
 
             return createdAppointment;
         }
@@ -73,7 +73,7 @@ namespace HospitalSanVicente.Services
             appointment.Status = AppointmentStatus.Canceled;
             _appointmentRepository.Update(appointment);
 
-            _emailService.SendEmail(patient.Email, "Cita Cancelada", $"Su cita del {date} ha sido cancelada.");
+            // _emailService.SendEmail(patient.Email, "Cita Cancelada", $"Su cita del {date} ha sido cancelada.");
 
             return appointment;
         }
