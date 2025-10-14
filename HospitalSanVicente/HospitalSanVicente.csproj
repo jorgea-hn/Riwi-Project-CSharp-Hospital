@@ -14,7 +14,7 @@
         <PackageReference Include="SendGrid" Version="9.29.3" />
     </ItemGroup>
 
-    <!-- Esto le dice al compilador que copie los archivos de configuración a la carpeta de salida -->
+    <!-- This instruction tells the build system to copy the config files to the output directory. -->
     <ItemGroup>
       <Content Include="appsettings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
