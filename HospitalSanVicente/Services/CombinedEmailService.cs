@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using HospitalSanVicente.Interfaces;
+using System.Threading.Tasks;
 
 namespace HospitalSanVicente.Services
 {
@@ -8,7 +8,6 @@ namespace HospitalSanVicente.Services
         private readonly SendGridEmailService _sendGridEmailService;
         private readonly EmailService _consoleEmailService;
 
-        // Recibe las dos implementaciones a través de inyección de dependencias
         public CombinedEmailService(SendGridEmailService sendGridEmailService, EmailService consoleEmailService)
         {
             _sendGridEmailService = sendGridEmailService;
@@ -17,15 +16,14 @@ namespace HospitalSanVicente.Services
 
         public async Task<bool> SendEmail(string to, string subject, string body)
         {
-            // Inicia ambas tareas en paralelo
+            // Ambas tareas ahora devuelven Task<bool>, por lo que WhenAll funciona.
             var sendGridTask = _sendGridEmailService.SendEmail(to, subject, body);
             var consoleTask = _consoleEmailService.SendEmail(to, subject, body);
 
-            // Espera a que ambas terminen
+            // Espera a que ambas terminen.
             await Task.WhenAll(sendGridTask, consoleTask);
 
-            // Devuelve el resultado del servicio principal (SendGrid)
-            // Si el correo real se envió con éxito, consideramos la operación exitosa.
+            // Devuelve el resultado del servicio principal (SendGrid).
             return await sendGridTask;
         }
     }

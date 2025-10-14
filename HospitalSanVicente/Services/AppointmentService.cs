@@ -3,6 +3,7 @@ using HospitalSanVicente.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks; // Importar Task
 
 namespace HospitalSanVicente.Services
 {
@@ -28,7 +29,8 @@ namespace HospitalSanVicente.Services
             _emailNotificationService = emailNotificationService;
         }
 
-        public Appointment ScheduleAppointment(string patientDocument, string doctorDocument, DateTime date)
+        // Modificado para ser asíncrono
+        public async Task<Appointment> ScheduleAppointment(string patientDocument, string doctorDocument, DateTime date)
         {
             var patient = _patientRepository.GetByDocument(patientDocument);
             var doctor = _doctorRepository.GetByDocument(doctorDocument);
@@ -64,12 +66,11 @@ namespace HospitalSanVicente.Services
 
             var createdAppointment = _appointmentRepository.Create(appointment);
 
-            // Load navigation properties for notification services
             createdAppointment.Patient = patient;
             createdAppointment.Doctor = doctor;
 
-            // Send confirmation email and record the notification
-            bool emailSent = _emailService.SendEmail(
+            // Corregido: Llamada asíncrona a SendEmail
+            bool emailSent = await _emailService.SendEmail(
                 createdAppointment.Patient.Email, 
                 "Your appointment has been scheduled", 
                 $"Hello {createdAppointment.Patient.Name}, your appointment with Dr. {createdAppointment.Doctor.Name} on {createdAppointment.AppointmentDate:yyyy-MM-dd HH:mm} has been successfully scheduled."
@@ -78,6 +79,8 @@ namespace HospitalSanVicente.Services
 
             return createdAppointment;
         }
+
+        // --- Los otros métodos no cambian ---
 
         public Appointment CancelAppointment(string patientDocument, DateTime date)
         {

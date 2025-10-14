@@ -1,22 +1,23 @@
 using HospitalSanVicente.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace HospitalSanVicente.Services
 {
-    // This is a mock implementation for demonstration purposes.
     public class EmailService : IEmailService
     {
-        public bool SendEmail(string recipient, string subject, string body)
+        // Simulación de envío de correo electrónico a la consola
+        public Task<bool> SendEmail(string to, string subject, string body)
         {
-            Console.WriteLine("\n--- Simulating Email Dispatch ---");
-            Console.WriteLine($"To: {recipient}");
+            Console.WriteLine("\n--- SIMULATING EMAIL ---");
+            Console.WriteLine($"To: {to}");
             Console.WriteLine($"Subject: {subject}");
             Console.WriteLine($"Body: {body}");
-            Console.WriteLine("--- Email Sent Successfully ---\n");
-            
-            // In a real application, this would involve connecting to an SMTP server
-            // and handling potential exceptions. For this simulation, we'll always assume success.
-            return true; 
+            Console.WriteLine("--- EMAIL SIMULATION END ---\n");
+
+            // Devuelve una tarea completada con éxito. 
+            // Esto simula una operación asíncrona que siempre tiene éxito.
+            return Task.FromResult(true);
         }
     }
 }

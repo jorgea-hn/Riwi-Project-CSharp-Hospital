@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace HospitalSanVicente.Interfaces
 {
     public interface IEmailService
     {
-        bool SendEmail(string recipient, string subject, string body);
+        Task<bool> SendEmail(string recipient, string subject, string body);
     }
 }
