@@ -2,6 +2,7 @@ using HospitalSanVicente.Interfaces;
 using HospitalSanVicente.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HospitalSanVicente.Services
 {
@@ -10,14 +11,12 @@ namespace HospitalSanVicente.Services
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IDoctorRepository _doctorRepository;
-        // private readonly IEmailService _emailService;
 
         public AppointmentService(IAppointmentRepository appointmentRepository, IPatientRepository patientRepository, IDoctorRepository doctorRepository)
         {
             _appointmentRepository = appointmentRepository;
             _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
-            // _emailService = emailService;
         }
 
         public Appointment ScheduleAppointment(string patientDocument, string doctorDocument, DateTime date)
@@ -27,17 +26,23 @@ namespace HospitalSanVicente.Services
 
             if (patient == null || doctor == null)
             {
-                throw new Exception("Paciente o doctor no encontrado.");
+                throw new Exception("Patient or doctor not found.");
             }
 
             if (date.Hour < 7 || date.Hour >= 17)
             {
-                throw new Exception("La cita debe ser programada entre las 7am y las 5pm.");
+                throw new Exception("Appointments must be scheduled between 7am and 5pm.");
             }
 
             if (_appointmentRepository.GetByPatientAndDate(patient.Id, date) != null)
             {
-                throw new Exception("El paciente ya tiene una cita programada en esa fecha y hora.");
+                throw new Exception("The patient already has an appointment scheduled at that date and time.");
+            }
+
+            var doctorAppointments = _appointmentRepository.GetByDoctor(doctor.Id);
+            if (doctorAppointments.Any(a => a.Status == AppointmentStatus.Scheduled && a.AppointmentDate > date.AddMinutes(-30) && a.AppointmentDate < date.AddMinutes(30)))
+            {
+                 throw new Exception("The doctor already has an appointment at that time.");
             }
 
             var appointment = new Appointment
@@ -50,8 +55,6 @@ namespace HospitalSanVicente.Services
 
             var createdAppointment = _appointmentRepository.Create(appointment);
 
-            // _emailService.SendEmail(patient.Email, "Cita Programada", $"Su cita ha sido programada para el {date} con el doctor {doctor.Name}.");
-
             return createdAppointment;
         }
 
@@ -60,20 +63,18 @@ namespace HospitalSanVicente.Services
             var patient = _patientRepository.GetByDocument(patientDocument);
             if (patient == null)
             {
-                throw new Exception("Paciente no encontrado.");
+                throw new Exception("Patient not found.");
             }
 
             var appointment = _appointmentRepository.GetByPatientAndDate(patient.Id, date);
 
             if (appointment == null)
             {
-                throw new Exception("Cita no encontrada.");
+                throw new Exception("Appointment not found.");
             }
 
             appointment.Status = AppointmentStatus.Canceled;
             _appointmentRepository.Update(appointment);
-
-            // _emailService.SendEmail(patient.Email, "Cita Cancelada", $"Su cita del {date} ha sido cancelada.");
 
             return appointment;
         }
@@ -85,14 +86,14 @@ namespace HospitalSanVicente.Services
 
             if (doctor == null || patient == null)
             {
-                throw new Exception("Doctor o paciente no encontrado.");
+                throw new Exception("Doctor or patient not found.");
             }
 
             var appointment = _appointmentRepository.GetByPatientAndDate(patient.Id, date);
 
             if (appointment == null || appointment.DoctorId != doctor.Id)
             {
-                throw new Exception("Cita no encontrada.");
+                throw new Exception("Appointment not found.");
             }
 
             appointment.Status = AppointmentStatus.Attended;
@@ -106,7 +107,7 @@ namespace HospitalSanVicente.Services
             var patient = _patientRepository.GetByDocument(patientDocument);
             if (patient == null)
             {
-                throw new Exception("Paciente no encontrado.");
+                throw new Exception("Patient not found.");
             }
             return _appointmentRepository.GetByPatient(patient.Id);
         }
@@ -116,7 +117,7 @@ namespace HospitalSanVicente.Services
             var doctor = _doctorRepository.GetByDocument(doctorDocument);
             if (doctor == null)
             {
-                throw new Exception("Doctor no encontrado.");
+                throw new Exception("Doctor not found.");
             }
             return _appointmentRepository.GetByDoctor(doctor.Id);
         }

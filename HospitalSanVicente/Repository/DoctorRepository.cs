@@ -2,6 +2,7 @@ using HospitalSanVicente.Interfaces;
 using HospitalSanVicente.Model;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace HospitalSanVicente.Repository
@@ -38,7 +39,7 @@ namespace HospitalSanVicente.Repository
 
         public IEnumerable<Doctor> GetBySpecialty(string specialty)
         {
-            return _doctors.Where(d => d.Specialty.Equals(specialty, StringComparison.OrdinalIgnoreCase)).ToList();
+            return _doctors.Where(d => string.Compare(d.Specialty, specialty, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) == 0).ToList();
         }
 
         public Doctor GetById(Guid id)

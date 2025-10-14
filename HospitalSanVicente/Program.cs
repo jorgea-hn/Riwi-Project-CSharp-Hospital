@@ -48,7 +48,7 @@ namespace HospitalSanVicente
                             DoctorManagementMenu(doctorService);
                             break;
                         case "3":
-                            AppointmentManagementMenu(appointmentService);
+                            AppointmentManagementMenu(appointmentService, patientService, doctorService);
                             break;
                         case "4":
                             return;
@@ -136,7 +136,7 @@ namespace HospitalSanVicente
             }
         }
 
-        private static void AppointmentManagementMenu(IAppointmentService appointmentService)
+        private static void AppointmentManagementMenu(IAppointmentService appointmentService, IPatientService patientService, IDoctorService doctorService)
         {
              while (true)
             {
@@ -154,19 +154,19 @@ namespace HospitalSanVicente
                 switch (choice)
                 {
                     case "1":
-                        ScheduleAppointment(appointmentService);
+                        ScheduleAppointment(appointmentService, patientService, doctorService);
                         break;
                     case "2":
-                        CancelAppointment(appointmentService);
+                        CancelAppointment(appointmentService, patientService);
                         break;
                     case "3":
-                        MarkAppointmentAsAttended(appointmentService);
+                        MarkAppointmentAsAttended(appointmentService, patientService, doctorService);
                         break;
                     case "4":
-                        GetAppointmentsByPatient(appointmentService);
+                        GetAppointmentsByPatient(appointmentService, patientService);
                         break;
                     case "5":
-                        GetAppointmentsByDoctor(appointmentService);
+                        GetAppointmentsByDoctor(appointmentService, doctorService);
                         break;
                     case "6":
                         return;
@@ -194,6 +194,7 @@ namespace HospitalSanVicente
 
         private static void EditPatient(IPatientService patientService)
         {
+            ListAllPatients(patientService);
             Console.Write("Enter the document of the patient to edit: ");
             var document = Console.ReadLine();
             var patient = patientService.FindPatientByDocument(document);
@@ -248,6 +249,7 @@ namespace HospitalSanVicente
 
         private static void EditDoctor(IDoctorService doctorService)
         {
+            ListAllDoctors(doctorService, null);
             Console.Write("Enter the document of the doctor to edit: ");
             var document = Console.ReadLine();
             var doctor = doctorService.FindDoctorByDocument(document);
@@ -296,11 +298,13 @@ namespace HospitalSanVicente
             }
         }
 
-        private static void ScheduleAppointment(IAppointmentService appointmentService)
+        private static void ScheduleAppointment(IAppointmentService appointmentService, IPatientService patientService, IDoctorService doctorService)
         {
+            ListAllPatients(patientService);
             Console.Write("Patient Document: ");
             var patientDocument = Console.ReadLine();
 
+            ListAllDoctors(doctorService, null);
             Console.Write("Doctor Document: ");
             var doctorDocument = Console.ReadLine();
 
@@ -311,8 +315,9 @@ namespace HospitalSanVicente
             Console.WriteLine("Appointment scheduled successfully.");
         }
 
-        private static void CancelAppointment(IAppointmentService appointmentService)
+        private static void CancelAppointment(IAppointmentService appointmentService, IPatientService patientService)
         {
+            ListAllPatients(patientService);
             Console.Write("Patient Document: ");
             var patientDocument = Console.ReadLine();
 
@@ -323,11 +328,13 @@ namespace HospitalSanVicente
             Console.WriteLine("Appointment canceled successfully.");
         }
 
-        private static void MarkAppointmentAsAttended(IAppointmentService appointmentService)
+        private static void MarkAppointmentAsAttended(IAppointmentService appointmentService, IPatientService patientService, IDoctorService doctorService)
         {
+            ListAllDoctors(doctorService, null);
             Console.Write("Doctor Document: ");
             var doctorDocument = Console.ReadLine();
 
+            ListAllPatients(patientService);
             Console.Write("Patient Document: ");
             var patientDocument = Console.ReadLine();
 
@@ -338,8 +345,9 @@ namespace HospitalSanVicente
             Console.WriteLine("Appointment marked as attended.");
         }
 
-        private static void GetAppointmentsByPatient(IAppointmentService appointmentService)
+        private static void GetAppointmentsByPatient(IAppointmentService appointmentService, IPatientService patientService)
         {
+            ListAllPatients(patientService);
             Console.Write("Patient Document: ");
             var patientDocument = Console.ReadLine();
             
@@ -358,8 +366,9 @@ namespace HospitalSanVicente
             }
         }
 
-        private static void GetAppointmentsByDoctor(IAppointmentService appointmentService)
+        private static void GetAppointmentsByDoctor(IAppointmentService appointmentService, IDoctorService doctorService)
         {
+            ListAllDoctors(doctorService, null);
             Console.Write("Doctor Document: ");
             var doctorDocument = Console.ReadLine();
             
