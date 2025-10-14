@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
+using HospitalSanVicente.Interfaces;
 
 namespace HospitalSanVicente.Services
 {
