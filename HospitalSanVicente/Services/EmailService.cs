@@ -4,9 +4,19 @@ using System.Threading.Tasks;
 
 namespace HospitalSanVicente.Services
 {
+    /// <summary>
+    /// A mock email service that simulates sending emails by writing their content to the console.
+    /// This is useful for development and testing environments where real emails are not needed.
+    /// </summary>
     public class EmailService : IEmailService
     {
-        // Simulación de envío de correo electrónico a la consola
+        /// <summary>
+        /// Simulates sending an email by printing its details to the console.
+        /// </summary>
+        /// <param name="to">The recipient's email address.</param>
+        /// <param name="subject">The subject of the email.</param>
+        /// <param name="body">The content of the email.</param>
+        /// <returns>A completed Task containing `true`, simulating a successful asynchronous send.</returns>
         public Task<bool> SendEmail(string to, string subject, string body)
         {
             Console.WriteLine("\n--- SIMULATING EMAIL ---");
@@ -15,8 +25,8 @@ namespace HospitalSanVicente.Services
             Console.WriteLine($"Body: {body}");
             Console.WriteLine("--- EMAIL SIMULATION END ---\n");
 
-            // Devuelve una tarea completada con éxito. 
-            // Esto simula una operación asíncrona que siempre tiene éxito.
+            // Return a successfully completed task to match the async interface signature.
+            // This mimics an asynchronous operation that completes instantly.
             return Task.FromResult(true);
         }
     }

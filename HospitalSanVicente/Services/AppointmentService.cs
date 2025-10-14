@@ -3,10 +3,13 @@ using HospitalSanVicente.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks; // Importar Task
+using System.Threading.Tasks;
 
 namespace HospitalSanVicente.Services
 {
+    /// <summary>
+    /// Service responsible for managing the business logic of appointments.
+    /// </summary>
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepository;
@@ -29,7 +32,14 @@ namespace HospitalSanVicente.Services
             _emailNotificationService = emailNotificationService;
         }
 
-        // Modificado para ser asíncrono
+        /// <summary>
+        /// Schedules a new appointment after validating business rules.
+        /// It also triggers a confirmation email.
+        /// </summary>
+        /// <param name="patientDocument">The document ID of the patient.</param>
+        /// <param name="doctorDocument">The document ID of the doctor.</param>
+        /// <param name="date">The desired date and time for the appointment.</param>
+        /// <returns>A Task that resolves to the newly created Appointment.</returns>
         public async Task<Appointment> ScheduleAppointment(string patientDocument, string doctorDocument, DateTime date)
         {
             var patient = _patientRepository.GetByDocument(patientDocument);
@@ -40,16 +50,19 @@ namespace HospitalSanVicente.Services
                 throw new Exception("Patient or doctor not found.");
             }
 
+            // Business Rule: Appointments can only be scheduled within working hours.
             if (date.Hour < 7 || date.Hour >= 17)
             {
                 throw new Exception("Appointments must be scheduled between 7am and 5pm.");
             }
 
+            // Business Rule: A patient cannot have two appointments at the same time.
             if (_appointmentRepository.GetByPatientAndDate(patient.Id, date) != null)
             {
                 throw new Exception("The patient already has an appointment scheduled at that date and time.");
             }
 
+            // Business Rule: A doctor must have a 30-minute window between appointments.
             var doctorAppointments = _appointmentRepository.GetByDoctor(doctor.Id);
             if (doctorAppointments.Any(a => a.Status == AppointmentStatus.Scheduled && a.AppointmentDate > date.AddMinutes(-30) && a.AppointmentDate < date.AddMinutes(30)))
             {
@@ -66,10 +79,12 @@ namespace HospitalSanVicente.Services
 
             var createdAppointment = _appointmentRepository.Create(appointment);
 
+            // Eagerly load navigation properties required for the notification.
+            // This avoids potential lazy loading issues.
             createdAppointment.Patient = patient;
             createdAppointment.Doctor = doctor;
 
-            // Corregido: Llamada asíncrona a SendEmail
+            // Asynchronously send the confirmation email and then record the notification attempt.
             bool emailSent = await _emailService.SendEmail(
                 createdAppointment.Patient.Email, 
                 "Your appointment has been scheduled", 
@@ -79,8 +94,6 @@ namespace HospitalSanVicente.Services
 
             return createdAppointment;
         }
-
-        // --- Los otros métodos no cambian ---
 
         public Appointment CancelAppointment(string patientDocument, DateTime date)
         {
