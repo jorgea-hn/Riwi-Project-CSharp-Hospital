@@ -15,7 +15,7 @@ namespace HospitalSanVicente.Services
             _doctorRepository = doctorRepository;
         }
 
-        public Doctor RegisterDoctor(Doctor doctor)
+        public Doctor Create(Doctor doctor)
         {
             if (_doctorRepository.GetByDocument(doctor.Document) != null)
             {
@@ -31,22 +31,17 @@ namespace HospitalSanVicente.Services
             return _doctorRepository.Create(doctor);
         }
 
-        public Doctor FindDoctorByDocument(string document)
+        public Doctor Get(string document)
         {
             return _doctorRepository.GetByDocument(document);
         }
 
-        public IEnumerable<Doctor> GetAllDoctors()
+        public IEnumerable<Doctor> GetAll()
         {
             return _doctorRepository.GetAll();
         }
 
-        public IEnumerable<Doctor> FindDoctorsBySpecialty(string specialty)
-        {
-            return _doctorRepository.GetBySpecialty(specialty);
-        }
-
-        public Doctor UpdateDoctor(Doctor doctor)
+        public Doctor Update(Doctor doctor)
         {
             var existingDoctor = _doctorRepository.GetByDocument(doctor.Document);
             if (existingDoctor != null && existingDoctor.Id != doctor.Id)
@@ -61,6 +56,21 @@ namespace HospitalSanVicente.Services
             }
 
             return _doctorRepository.Update(doctor);
+        }
+
+        public void Delete(string document)
+        {
+            var doctorToDelete = _doctorRepository.GetByDocument(document);
+            if (doctorToDelete == null)
+            {
+                throw new Exception("Doctor not found.");
+            }
+            _doctorRepository.Delete(doctorToDelete.Id);
+        }
+
+        public IEnumerable<Doctor> FindDoctorsBySpecialty(string specialty)
+        {
+            return _doctorRepository.GetBySpecialty(specialty);
         }
     }
 }

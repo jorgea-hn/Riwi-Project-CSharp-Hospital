@@ -188,7 +188,7 @@ namespace HospitalSanVicente
             var email = Console.ReadLine();
 
             var patient = new Patient { Name = name, Document = document, Email = email };
-            patientService.RegisterPatient(patient);
+            patientService.Create(patient);
             Console.WriteLine("Patient registered successfully.");
         }
 
@@ -197,7 +197,7 @@ namespace HospitalSanVicente
             ListAllPatients(patientService);
             Console.Write("Enter the document of the patient to edit: ");
             var document = Console.ReadLine();
-            var patient = patientService.FindPatientByDocument(document);
+            var patient = patientService.Get(document);
 
             if (patient == null)
             {
@@ -213,13 +213,13 @@ namespace HospitalSanVicente
             var newEmail = Console.ReadLine();
             patient.Email = string.IsNullOrEmpty(newEmail) ? patient.Email : newEmail;
 
-            patientService.UpdatePatient(patient);
+            patientService.Update(patient);
             Console.WriteLine("Patient updated successfully.");
         }
 
         private static void ListAllPatients(IPatientService patientService)
         {
-            var patients = patientService.GetAllPatients();
+            var patients = patientService.GetAll();
             if (!patients.Any())
             {
                 Console.WriteLine("No patients registered.");
@@ -243,7 +243,7 @@ namespace HospitalSanVicente
             var specialty = Console.ReadLine();
 
             var doctor = new Doctor { Name = name, Document = document, Specialty = specialty };
-            doctorService.RegisterDoctor(doctor);
+            doctorService.Create(doctor);
             Console.WriteLine("Doctor registered successfully.");
         }
 
@@ -252,7 +252,7 @@ namespace HospitalSanVicente
             ListAllDoctors(doctorService, null);
             Console.Write("Enter the document of the doctor to edit: ");
             var document = Console.ReadLine();
-            var doctor = doctorService.FindDoctorByDocument(document);
+            var doctor = doctorService.Get(document);
 
             if (doctor == null)
             {
@@ -268,7 +268,7 @@ namespace HospitalSanVicente
             var newSpecialty = Console.ReadLine();
             doctor.Specialty = string.IsNullOrEmpty(newSpecialty) ? doctor.Specialty : newSpecialty;
 
-            doctorService.UpdateDoctor(doctor);
+            doctorService.Update(doctor);
             Console.WriteLine("Doctor updated successfully.");
         }
 
@@ -277,7 +277,7 @@ namespace HospitalSanVicente
             IEnumerable<Doctor> doctors;
             if (string.IsNullOrEmpty(specialty))
             {
-                doctors = doctorService.GetAllDoctors();
+                doctors = doctorService.GetAll();
                 Console.WriteLine("\n--- All Doctors ---");
             }
             else

@@ -1,13 +1,12 @@
 using HospitalSanVicente.Model;
-using System.Collections.Generic;
 
 namespace HospitalSanVicente.Interfaces
 {
-    public interface IPatientService
+    public interface IPatientService : ICrudService<Patient, string>
     {
-        Patient RegisterPatient(Patient patient);
-        Patient FindPatientByDocument(string document);
-        IEnumerable<Patient> GetAllPatients();
-        Patient UpdatePatient(Patient patient);
+        // The base CRUD methods are inherited.
+        // The service layer will use the document (string) as the identifier.
+
+        // We can add patient-specific methods here if needed in the future.
     }
 }
