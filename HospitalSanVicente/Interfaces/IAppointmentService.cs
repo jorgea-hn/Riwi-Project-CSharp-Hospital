@@ -11,5 +11,6 @@ namespace HospitalSanVicente.Interfaces
         Appointment MarkAppointmentAsAttended(string doctorDocument, string patientDocument, DateTime date);
         IEnumerable<Appointment> GetAppointmentsByPatient(string patientDocument);
         IEnumerable<Appointment> GetAppointmentsByDoctor(string doctorDocument);
+        IEnumerable<Appointment> GetAllAppointments();
     }
 }

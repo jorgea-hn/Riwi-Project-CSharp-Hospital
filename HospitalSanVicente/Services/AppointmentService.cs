@@ -121,5 +121,10 @@ namespace HospitalSanVicente.Services
             }
             return _appointmentRepository.GetByDoctor(doctor.Id);
         }
+
+        public IEnumerable<Appointment> GetAllAppointments()
+        {
+            return _appointmentRepository.GetAll();
+        }
     }
 }

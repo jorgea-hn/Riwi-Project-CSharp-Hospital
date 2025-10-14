@@ -146,7 +146,8 @@ namespace HospitalSanVicente
                 Console.WriteLine("3. Mark Appointment as Attended");
                 Console.WriteLine("4. View Appointments by Patient");
                 Console.WriteLine("5. View Appointments by Doctor");
-                Console.WriteLine("6. Back to main menu");
+                Console.WriteLine("6. List All Appointments");
+                Console.WriteLine("7. Back to main menu");
                 Console.Write("Select an option: ");
 
                 var choice = Console.ReadLine();
@@ -169,6 +170,9 @@ namespace HospitalSanVicente
                         GetAppointmentsByDoctor(appointmentService, doctorService);
                         break;
                     case "6":
+                        ListAllAppointments(appointmentService);
+                        break;
+                    case "7":
                         return;
                     default:
                         Console.WriteLine("Invalid option.");
@@ -384,6 +388,23 @@ namespace HospitalSanVicente
             foreach (var app in appointments)
             {
                 Console.WriteLine($"- Date: {app.AppointmentDate}, Patient: {app.Patient.Name}, Status: {app.Status}");
+            }
+        }
+
+        private static void ListAllAppointments(IAppointmentService appointmentService)
+        {
+            var appointments = appointmentService.GetAllAppointments();
+
+            if (!appointments.Any())
+            {
+                Console.WriteLine("No appointments found.");
+                return;
+            }
+
+            Console.WriteLine("\n--- All Appointments ---");
+            foreach (var app in appointments.OrderBy(a => a.AppointmentDate))
+            {
+                Console.WriteLine($"- Date: {app.AppointmentDate}, Patient: {app.Patient.Name}, Doctor: {app.Doctor.Name}, Status: {app.Status}");
             }
         }
     }
