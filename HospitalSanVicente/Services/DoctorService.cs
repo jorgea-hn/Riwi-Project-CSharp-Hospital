@@ -1,6 +1,7 @@
 using HospitalSanVicente.Interfaces;
 using HospitalSanVicente.Model;
 using System;
+using System.Collections.Generic;
 
 namespace HospitalSanVicente.Services
 {
@@ -22,9 +23,24 @@ namespace HospitalSanVicente.Services
             return _doctorRepository.Create(doctor);
         }
 
-        public Doctor GetDoctorByDocument(string document)
+        public Doctor FindDoctorByDocument(string document)
         {
             return _doctorRepository.GetByDocument(document);
+        }
+
+        public IEnumerable<Doctor> GetAllDoctors()
+        {
+            return _doctorRepository.GetAll();
+        }
+
+        public IEnumerable<Doctor> FindDoctorsBySpecialty(string specialty)
+        {
+            return _doctorRepository.GetBySpecialty(specialty);
+        }
+
+        public Doctor UpdateDoctor(Doctor doctor)
+        {
+            return _doctorRepository.Update(doctor);
         }
     }
 }

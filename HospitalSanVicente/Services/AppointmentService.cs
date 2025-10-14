@@ -20,10 +20,10 @@ namespace HospitalSanVicente.Services
             _emailService = emailService;
         }
 
-        public Appointment ScheduleAppointment(Guid patientId, Guid doctorId, DateTime date)
+        public Appointment ScheduleAppointment(string patientDocument, string doctorDocument, DateTime date)
         {
-            var patient = _patientRepository.GetById(patientId);
-            var doctor = _doctorRepository.GetById(doctorId);
+            var patient = _patientRepository.GetByDocument(patientDocument);
+            var doctor = _doctorRepository.GetByDocument(doctorDocument);
 
             if (patient == null || doctor == null)
             {
@@ -35,15 +35,15 @@ namespace HospitalSanVicente.Services
                 throw new Exception("La cita debe ser programada entre las 7am y las 5pm.");
             }
 
-            if (_appointmentRepository.GetByPatientAndDate(patientId, date) != null)
+            if (_appointmentRepository.GetByPatientAndDate(patient.Id, date) != null)
             {
                 throw new Exception("El paciente ya tiene una cita programada en esa fecha y hora.");
             }
 
             var appointment = new Appointment
             {
-                PatientId = patientId,
-                DoctorId = doctorId,
+                PatientId = patient.Id,
+                DoctorId = doctor.Id,
                 AppointmentDate = date,
                 Status = AppointmentStatus.Scheduled
             };
@@ -55,9 +55,15 @@ namespace HospitalSanVicente.Services
             return createdAppointment;
         }
 
-        public Appointment CancelAppointment(Guid patientId, DateTime date)
+        public Appointment CancelAppointment(string patientDocument, DateTime date)
         {
-            var appointment = _appointmentRepository.GetByPatientAndDate(patientId, date);
+            var patient = _patientRepository.GetByDocument(patientDocument);
+            if (patient == null)
+            {
+                throw new Exception("Paciente no encontrado.");
+            }
+
+            var appointment = _appointmentRepository.GetByPatientAndDate(patient.Id, date);
 
             if (appointment == null)
             {
@@ -67,17 +73,24 @@ namespace HospitalSanVicente.Services
             appointment.Status = AppointmentStatus.Canceled;
             _appointmentRepository.Update(appointment);
 
-            var patient = _patientRepository.GetById(patientId);
             _emailService.SendEmail(patient.Email, "Cita Cancelada", $"Su cita del {date} ha sido cancelada.");
 
             return appointment;
         }
 
-        public Appointment MarkAppointmentAsAttended(Guid doctorId, Guid patientId, DateTime date)
+        public Appointment MarkAppointmentAsAttended(string doctorDocument, string patientDocument, DateTime date)
         {
-            var appointment = _appointmentRepository.GetByPatientAndDate(patientId, date);
+            var doctor = _doctorRepository.GetByDocument(doctorDocument);
+            var patient = _patientRepository.GetByDocument(patientDocument);
 
-            if (appointment == null || appointment.DoctorId != doctorId)
+            if (doctor == null || patient == null)
+            {
+                throw new Exception("Doctor o paciente no encontrado.");
+            }
+
+            var appointment = _appointmentRepository.GetByPatientAndDate(patient.Id, date);
+
+            if (appointment == null || appointment.DoctorId != doctor.Id)
             {
                 throw new Exception("Cita no encontrada.");
             }
@@ -88,14 +101,24 @@ namespace HospitalSanVicente.Services
             return appointment;
         }
 
-        public IEnumerable<Appointment> GetAppointmentsByPatient(Guid patientId)
+        public IEnumerable<Appointment> GetAppointmentsByPatient(string patientDocument)
         {
-            return _appointmentRepository.GetByPatient(patientId);
+            var patient = _patientRepository.GetByDocument(patientDocument);
+            if (patient == null)
+            {
+                throw new Exception("Paciente no encontrado.");
+            }
+            return _appointmentRepository.GetByPatient(patient.Id);
         }
 
-        public IEnumerable<Appointment> GetAppointmentsByDoctor(Guid doctorId)
+        public IEnumerable<Appointment> GetAppointmentsByDoctor(string doctorDocument)
         {
-            return _appointmentRepository.GetByDoctor(doctorId);
+            var doctor = _doctorRepository.GetByDocument(doctorDocument);
+            if (doctor == null)
+            {
+                throw new Exception("Doctor no encontrado.");
+            }
+            return _appointmentRepository.GetByDoctor(doctor.Id);
         }
     }
 }

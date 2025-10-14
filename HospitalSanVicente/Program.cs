@@ -115,26 +115,14 @@ namespace HospitalSanVicente
         {
             Console.Write("Documento del Paciente: ");
             var patientDocument = Console.ReadLine();
-            var patient = patientService.GetPatientByDocument(patientDocument);
-            if (patient == null)
-            {
-                Console.WriteLine("Paciente no encontrado.");
-                return;
-            }
 
             Console.Write("Documento del Doctor: ");
             var doctorDocument = Console.ReadLine();
-            var doctor = doctorService.GetDoctorByDocument(doctorDocument);
-            if (doctor == null)
-            {
-                Console.WriteLine("Doctor no encontrado.");
-                return;
-            }
 
             Console.Write("Fecha de la Cita (yyyy-MM-dd HH:mm): ");
             var date = DateTime.Parse(Console.ReadLine());
 
-            appointmentService.ScheduleAppointment(patient.Id, doctor.Id, date);
+            appointmentService.ScheduleAppointment(patientDocument, doctorDocument, date);
             Console.WriteLine("Cita programada exitosamente.");
         }
 
@@ -142,17 +130,11 @@ namespace HospitalSanVicente
         {
             Console.Write("Documento del Paciente: ");
             var patientDocument = Console.ReadLine();
-            var patient = patientService.GetPatientByDocument(patientDocument);
-            if (patient == null)
-            {
-                Console.WriteLine("Paciente no encontrado.");
-                return;
-            }
 
             Console.Write("Fecha de la Cita (yyyy-MM-dd HH:mm): ");
             var date = DateTime.Parse(Console.ReadLine());
 
-            appointmentService.CancelAppointment(patient.Id, date);
+            appointmentService.CancelAppointment(patientDocument, date);
             Console.WriteLine("Cita cancelada exitosamente.");
         }
 
@@ -160,26 +142,14 @@ namespace HospitalSanVicente
         {
             Console.Write("Documento del Doctor: ");
             var doctorDocument = Console.ReadLine();
-            var doctor = doctorService.GetDoctorByDocument(doctorDocument);
-            if (doctor == null)
-            {
-                Console.WriteLine("Doctor no encontrado.");
-                return;
-            }
 
             Console.Write("Documento del Paciente: ");
             var patientDocument = Console.ReadLine();
-            var patient = patientService.GetPatientByDocument(patientDocument);
-            if (patient == null)
-            {
-                Console.WriteLine("Paciente no encontrado.");
-                return;
-            }
 
             Console.Write("Fecha de la Cita (yyyy-MM-dd HH:mm): ");
             var date = DateTime.Parse(Console.ReadLine());
 
-            appointmentService.MarkAppointmentAsAttended(doctor.Id, patient.Id, date);
+            appointmentService.MarkAppointmentAsAttended(doctorDocument, patientDocument, date);
             Console.WriteLine("Cita marcada como atendida.");
         }
 
@@ -187,14 +157,14 @@ namespace HospitalSanVicente
         {
             Console.Write("Documento del Paciente: ");
             var patientDocument = Console.ReadLine();
-            var patient = patientService.GetPatientByDocument(patientDocument);
+            var patient = patientService.FindPatientByDocument(patientDocument);
             if (patient == null)
             {
                 Console.WriteLine("Paciente no encontrado.");
                 return;
             }
 
-            var appointments = appointmentService.GetAppointmentsByPatient(patient.Id);
+            var appointments = appointmentService.GetAppointmentsByPatient(patient.Document);
 
             foreach (var app in appointments)
             {
@@ -206,14 +176,14 @@ namespace HospitalSanVicente
         {
             Console.Write("Documento del Doctor: ");
             var doctorDocument = Console.ReadLine();
-            var doctor = doctorService.GetDoctorByDocument(doctorDocument);
+            var doctor = doctorService.FindDoctorByDocument(doctorDocument);
             if (doctor == null)
             {
                 Console.WriteLine("Doctor no encontrado.");
                 return;
             }
 
-            var appointments = appointmentService.GetAppointmentsByDoctor(doctor.Id);
+            var appointments = appointmentService.GetAppointmentsByDoctor(doctor.Document);
 
             foreach (var app in appointments)
             {
