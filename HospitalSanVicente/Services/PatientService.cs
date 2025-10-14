@@ -18,7 +18,7 @@ namespace HospitalSanVicente.Services
         {
             if (_patientRepository.GetByDocument(patient.Document) != null)
             {
-                throw new Exception("El paciente ya está registrado.");
+                throw new Exception("A patient with this document ID is already registered.");
             }
             return _patientRepository.Create(patient);
         }
@@ -35,6 +35,11 @@ namespace HospitalSanVicente.Services
 
         public Patient UpdatePatient(Patient patient)
         {
+            var existingPatient = _patientRepository.GetByDocument(patient.Document);
+            if (existingPatient != null && existingPatient.Id != patient.Id)
+            {
+                throw new Exception("Another patient with the same document ID already exists.");
+            }
             return _patientRepository.Update(patient);
         }
     }

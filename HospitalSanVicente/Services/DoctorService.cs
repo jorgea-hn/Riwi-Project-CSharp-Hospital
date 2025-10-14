@@ -2,6 +2,7 @@ using HospitalSanVicente.Interfaces;
 using HospitalSanVicente.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HospitalSanVicente.Services
 {
@@ -18,8 +19,15 @@ namespace HospitalSanVicente.Services
         {
             if (_doctorRepository.GetByDocument(doctor.Document) != null)
             {
-                throw new Exception("El doctor ya está registrado.");
+                throw new Exception("A doctor with this document ID is already registered.");
             }
+
+            var existingDoctors = _doctorRepository.GetAll();
+            if (existingDoctors.Any(d => d.Name.Equals(doctor.Name, StringComparison.OrdinalIgnoreCase) && d.Specialty.Equals(doctor.Specialty, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new Exception("A doctor with the same name and specialty already exists.");
+            }
+
             return _doctorRepository.Create(doctor);
         }
 
@@ -40,6 +48,18 @@ namespace HospitalSanVicente.Services
 
         public Doctor UpdateDoctor(Doctor doctor)
         {
+            var existingDoctor = _doctorRepository.GetByDocument(doctor.Document);
+            if (existingDoctor != null && existingDoctor.Id != doctor.Id)
+            {
+                throw new Exception("Another doctor with the same document ID already exists.");
+            }
+
+            var allDoctors = _doctorRepository.GetAll();
+            if (allDoctors.Any(d => d.Name.Equals(doctor.Name, StringComparison.OrdinalIgnoreCase) && d.Specialty.Equals(doctor.Specialty, StringComparison.OrdinalIgnoreCase) && d.Id != doctor.Id))
+            {
+                throw new Exception("Another doctor with the same name and specialty already exists.");
+            }
+
             return _doctorRepository.Update(doctor);
         }
     }
