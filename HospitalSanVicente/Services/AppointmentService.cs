@@ -72,7 +72,7 @@ namespace HospitalSanVicente.Services
             bool emailSent = _emailService.SendEmail(
                 createdAppointment.Patient.Email, 
                 "Your appointment has been scheduled", 
-                $"Hello {createdAppointment.Patient.Name}, your appointment with Dr. {createdAppointment.Doctor.Name} on {created.AppointmentDate:yyyy-MM-dd HH:mm} has been successfully scheduled."
+                $"Hello {createdAppointment.Patient.Name}, your appointment with Dr. {createdAppointment.Doctor.Name} on {createdAppointment.AppointmentDate:yyyy-MM-dd HH:mm} has been successfully scheduled."
             );
             _emailNotificationService.CreateNotification(createdAppointment, emailSent);
 
