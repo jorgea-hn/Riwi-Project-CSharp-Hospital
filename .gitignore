@@ -1,9 +1,3 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
 
-# Rider
-.idea/
-*.sln.iml
+# Secret files
+**/appsettings.Secret.json
